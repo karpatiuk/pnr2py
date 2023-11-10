@@ -33,7 +33,8 @@ class Parser:
 
         print(lexer.has_errors)
 
-    def __merge_non_new_lines(self, lines: list) -> list:
+    @staticmethod
+    def __merge_non_new_lines(lines: list) -> list:
         """
         Merge non-new lines if they exceed a certain length.
 
