@@ -1,5 +1,12 @@
-class Flight:
-    def __init__(self, dep=None, arr=None, flight=None):
-        self.departure = dep
-        self.arrival = arr
-        self.flight = flight
+from dataclasses import dataclass, field
+from .JsonSerializable import JsonSerializable
+from .Airport import Airport
+
+
+@dataclass
+class Flight(JsonSerializable):
+    departure: Airport = field(default=None)
+    arrival: Airport = field(default=None)
+
+    def populate(self, dep_arr):
+        pass

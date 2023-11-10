@@ -1,10 +1,13 @@
+from dataclasses import dataclass, field
 from ..patterns import constants
+from .JsonSerializable import JsonSerializable
 from .Flight import Flight
 
 
-class PnrData:
-    def __init__(self, data):
-        self.__data = data
+@dataclass
+class PnrData(JsonSerializable):
+    __data: dict
+    flights: list = field(default_factory=list)
 
     def populate(self):
         for data in self.__data:
@@ -13,7 +16,6 @@ class PnrData:
                 for value_type, matched_value in data.matched_values.items():
                     match value_type:
                         case constants.N_LINE_NUMBER:
-
                             pass
                         case _:
                             pass
