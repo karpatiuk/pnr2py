@@ -29,9 +29,10 @@ class Parser:
         lines = self.__merge_non_new_lines(lines)
         lexer = Lexer(lines)
         lexer.run()
-        pnr_data = PnrData(lexer.result).populate()
+        pnr_data = PnrData(lexer.result)
+        pnr_data.populate()
 
-        print(lexer.has_errors)
+        print(pnr_data.to_json())
 
     @staticmethod
     def __merge_non_new_lines(lines: list) -> list:

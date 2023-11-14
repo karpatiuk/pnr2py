@@ -1,6 +1,7 @@
 from .patterns import constants
 from .helpers.text import *
 
+
 class Token:
     """
     A class representing a token for parsing.
@@ -58,11 +59,8 @@ class ItineraryLine:
             matched_value = match_pattern(text_line, token.regex)
             if matched_value is not None:
                 self.matched_values[token.name] = matched_value.group()
-                text_line = ' ' + text_line[matched_value.end():].strip()+' '
+                text_line = ' ' + text_line[matched_value.end():].strip() + ' '
             elif token.required:
                 self.is_error = True
                 self.error_token = token.name
                 break
-
-
-
