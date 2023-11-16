@@ -12,10 +12,13 @@ def parse_flight_number_text(txt: str) -> dict:
 
 @dataclass
 class FlightDetails(JsonSerializable):
-    __depDate: dict = field(default=None,repr=False)
+    __depDate: dict = field(default=None)
     __arrDate: dict = field(default=None)
+    __depTime: dict = field(default=None)
+    __arrTime: dict = field(default=None)
     flight_number: str = field(default=None)
     carrier_iata_code: str = field(default=None)
+    cabin: str = field(default=None)
     booking_class: str = field(default=None)
     departure_date: str = field(default=None)
     arrival_date: str = field(default=None)
@@ -25,9 +28,31 @@ class FlightDetails(JsonSerializable):
         match value_type:
             case constants.N_FLIGHT_NUMBER:
                 self.populate_flight_number(value)
+            case constants.N_DEPARTURE_DATE:
+                pass
+            case constants.N_DEPARTURE_TIME:
+                pass
+            case constants.N_ARRIVAL_TIME:
+                pass
+            case constants.N_ARRIVAL_DATE:
+                pass
 
     def populate_flight_number(self, txt: str):
         res = parse_flight_number_text(txt.strip())
         self.flight_number = res['flight_number']
         self.carrier_iata_code = res['carrier']
         self.booking_class = res['booking_class']
+
+    def parse_date(self, date_string: str, date_type: str):
+        month = date_string[-3:]
+        day = date_string[:-3]
+        match date_type:
+            case constants.N_DEPARTURE_DATE:
+                self.__depDate['day'] = day
+                self.__depDate['month'] = month
+            case constants.N_ARRIVAL_DATE:
+                self.__arrDate['day'] = day
+                self.__arrDate['month'] = month
+
+    def parse_time(self, time_string: str):
+        pass

@@ -8,5 +8,7 @@ class Airport(JsonSerializable):
     iata: str = field(default=None)
     icao: str = field(default=None)
 
-    def populate(self, iata):
-        pass
+    def populate(self, iata: str | None = None, name: str | None = None, icao: str | None = None):
+        self.name = name
+        self.iata = iata
+        self.icao = icao
