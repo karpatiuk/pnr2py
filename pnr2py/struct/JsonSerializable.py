@@ -13,29 +13,32 @@ class JsonSerializable:
         """
         Serialize the data class to a JSON-formatted string.
 
-        Args:
-            remove_none (bool): If True, remove fields with values of None. Default is False.
-            camel_case (bool):  If True, all attributes will be camelCased. Default is False.
-            indent (None, int, or str): Number of spaces to use for indentation in the formatted JSON.
-                Default is None (no indentation).
-        Returns:
-            str: JSON-formatted string representing the data class.
+        :param remove_none: If True, remove fields with values of None. Default is False.
+        :type remove_none: bool
+        :param camel_case: If True, all attributes will be camelCased. Default is False.
+        :type camel_case: bool
+        :param indent: Number of spaces to use for indentation in the formatted JSON.
+                       Default is None (no indentation).
+        :type indent: None, int, or str
+        :return: JSON-formatted string representing the data class.
+        :rtype: str
         """
         metadata = asdict(self)
-        filtered_data = self.filter_dictionary(metadata,camel_case, remove_none)
+        filtered_data = self.filter_dictionary(metadata, camel_case, remove_none)
         return json.dumps(filtered_data, indent=indent)
 
     def filter_dictionary(self, data: dict, camel_case: bool = False, remove_none: bool = False) -> dict:
         """
         Recursively filter a dictionary to remove fields with names containing "__".
 
-        Args:
-            data (dict): Input dictionary to be filtered.
-            remove_none (bool): If True, remove fields with values of None. Default is False.
-            camel_case (bool):  If True, all attributes will be camelCased. Default is False.
-
-        Returns:
-            dict: Filtered dictionary.
+        :param data: Input dictionary to be filtered.
+        :type data: dict
+        :param camel_case: If True, all attributes will be camelCased. Default is False.
+        :type camel_case: bool
+        :param remove_none: If True, remove fields with values of None. Default is False.
+        :type remove_none: bool
+        :return: Filtered dictionary.
+        :rtype: dict
         """
         filtered_data = {}
 
@@ -44,10 +47,11 @@ class JsonSerializable:
                 if camel_case:
                     key = to_camel_case(key)
                 if isinstance(value, dict):
-                    filtered_data[key] = self.filter_dictionary(value,camel_case, remove_none)
+                    filtered_data[key] = self.filter_dictionary(value, camel_case, remove_none)
                 elif isinstance(value, (list, tuple)):
-                    filtered_data[key] = [self.filter_dictionary(item,camel_case, remove_none) if isinstance(item, dict) else item
-                                          for item in value]
+                    filtered_data[key] = [
+                        self.filter_dictionary(item, camel_case, remove_none) if isinstance(item, dict) else item
+                        for item in value]
                 else:
                     if (remove_none is True and value is not None) or remove_none is False:
                         filtered_data[key] = value

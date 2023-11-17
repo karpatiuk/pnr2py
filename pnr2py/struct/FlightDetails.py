@@ -23,20 +23,20 @@ class FlightDetails(JsonSerializable):
     departure_date: str = field(default=None)
     arrival_date: str = field(default=None)
 
-    def populate(self, value, value_type: str):
+    def populate(self, value:str , value_type: str):
         print(value, value_type)
         match value_type:
             case constants.N_FLIGHT_NUMBER:
                 self.populate_flight_number(value)
             case constants.N_DEPARTURE_DATE:
-                pass
+                self.parse_date(value.strip(), constants.N_DEPARTURE_DATE)
+
             case constants.N_DEPARTURE_TIME:
                 pass
             case constants.N_ARRIVAL_TIME:
                 pass
             case constants.N_ARRIVAL_DATE:
-                pass
-
+                self.parse_date(value, constants.N_ARRIVAL_DATE)
     def populate_flight_number(self, txt: str):
         res = parse_flight_number_text(txt.strip())
         self.flight_number = res['flight_number']
@@ -44,15 +44,31 @@ class FlightDetails(JsonSerializable):
         self.booking_class = res['booking_class']
 
     def parse_date(self, date_string: str, date_type: str):
+        """
+        Parse the date string and store the day and month in the corresponding class attribute.
+
+        :param date_string: The input date string.
+        :type date_string: str
+        :param date_type: The type of date, either constants.N_DEPARTURE_DATE or constants.N_ARRIVAL_DATE.
+        :type date_type: str
+        """
+        # Extract the last 3 characters as month and the first 2 characters as day.
         month = date_string[-3:]
-        day = date_string[:-3]
+        day = date_string[:2]
+
         match date_type:
             case constants.N_DEPARTURE_DATE:
-                self.__depDate['day'] = day
-                self.__depDate['month'] = month
+                if self.__depDate is None:
+                    self.__depDate = {'day': day, 'month': month}
+                else:
+                    self.__depDate['day'] = day
+                    self.__depDate['month'] = month
             case constants.N_ARRIVAL_DATE:
-                self.__arrDate['day'] = day
-                self.__arrDate['month'] = month
+                if self.__arrDate is None:
+                    self.__arrDate = {'day': day, 'month': month}
+                else:
+                    self.__arrDate['day'] = day
+                    self.__arrDate['month'] = month
 
     def parse_time(self, time_string: str):
         pass
