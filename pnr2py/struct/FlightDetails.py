@@ -23,7 +23,7 @@ class FlightDetails(JsonSerializable):
     departure_date: str = field(default=None)
     arrival_date: str = field(default=None)
 
-    def populate(self, value:str , value_type: str):
+    def populate(self, value: str, value_type: str):
         print(value, value_type)
         match value_type:
             case constants.N_FLIGHT_NUMBER:
@@ -37,6 +37,7 @@ class FlightDetails(JsonSerializable):
                 pass
             case constants.N_ARRIVAL_DATE:
                 self.parse_date(value, constants.N_ARRIVAL_DATE)
+
     def populate_flight_number(self, txt: str):
         res = parse_flight_number_text(txt.strip())
         self.flight_number = res['flight_number']
