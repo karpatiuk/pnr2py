@@ -30,13 +30,14 @@ class FlightDetails(JsonSerializable):
                 self.populate_flight_number(value)
             case constants.N_DEPARTURE_DATE:
                 self.parse_date(value.strip(), constants.N_DEPARTURE_DATE)
-
             case constants.N_DEPARTURE_TIME:
                 pass
             case constants.N_ARRIVAL_TIME:
                 pass
             case constants.N_ARRIVAL_DATE:
                 self.parse_date(value, constants.N_ARRIVAL_DATE)
+
+        self.populate_date_time()
 
     def populate_flight_number(self, txt: str):
         res = parse_flight_number_text(txt.strip())
@@ -72,4 +73,14 @@ class FlightDetails(JsonSerializable):
                     self.__arrDate['month'] = month
 
     def parse_time(self, time_string: str):
+        pass
+
+    def populate_date_time(self):
+        cur_date_time = datetime.now()
+        if self.__depDate is not None:
+            # print(self.__depDate.get('month').title())
+            dep_date = datetime.strptime(
+                self.__depDate['day'] + self.__depDate['month'].title() + cur_date_time.strftime('%Y'),
+                constants.CURR_DATE_GDS_FORMAT)
+            print(dep_date)
         pass
