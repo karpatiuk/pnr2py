@@ -1,6 +1,5 @@
 from .lexer import *
 from .struct.PnrData import *
-import re
 
 
 class Parser:
@@ -48,7 +47,7 @@ class Parser:
             list: A list of lines with non-new lines merged.
         """
         for idx, line in enumerate(lines):
-            matches = match_pattern(line,r"\s+")
+            matches = match_pattern(line, r"\s+")
             if matches and matches.group() is not None and len(matches.group()) > 20:
                 try:
                     lines[idx - 1] += ' ' + line.strip()

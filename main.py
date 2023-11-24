@@ -1,6 +1,5 @@
 # This is a sample Python script.
 import pnr2py
-import re
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
@@ -22,8 +21,15 @@ lines = [
     '7. LX   41 Q  02SEP LAXZRH HK1  1925  #1525  O*       E FR  1',
     '8. LX   41 Q  02SEP LAXZRH HK1  1925  -1525  O*       E FR',
     '9. LX   41 Q  02SEP LAXZRH HK1  1925  *1525  O*       E FR  1',
+    '10 BA 190 Q 14JUN 3 AUSLHR HK2             620P 950A+1 *1A/E*',
+    '11 BA 206 Y 10JUN 2 MIALHR NN15            450P 635A+1 744 E0M',
+    '1*AY4025R 09JUL SA DUBORD HK5  0930  1140 /O $ E',
+    '1 DL  41K 15JUL FR LAXSYD SS1  2255  0645 #2/O $ E',
+    '1 JL   5O 23JAN MO JFKHND HK2  1250  1710 #1/O $ J01 E',
+    '4 JL   6Q 31DEC TH HNDJFK HK2  1105  1000 -1/O $ J02 E',
+    '4 JL   6Q 31DEC TH HNDJFK HK2  1105  1000 -2/O $ J02 E',
 ]
-linestring = '\n'.join(map(str,lines))
+linestring = '\n'.join(map(str, lines))
 linesOneString = ("1 TK  192P 15SEP T DFWIST*SS1 0815P 0350P 16SEP\n2 TK  836P 16SEP F ISTTLV*SS1 0500P 0705P\n3 TK  "
                   "785W 29SEP T TLVIST*SS1 1030A 1250A\n4 TK  191W 29SEP T ISTDFW*SS1 0200P 0645P")
 

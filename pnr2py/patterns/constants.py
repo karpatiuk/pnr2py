@@ -39,6 +39,10 @@ ITINERARY_LINE = (
     (N_REF_ID, PATTERN_REF_ID, False)
 )
 
+PATTERN_TIME_STRING = r'(\W*([0-9]{3,4})?)'
+PATTERN_DAY_PLUS_STRING = r'(\+([0-9]{1})|\#[0-9]{1})'
+PATTERN_DAY_MINUS = r'(-([1-2]{1}))'
+
 DATE_FORMAT_GDS = '%d%b'
 APP_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 CURR_DATE_GDS_FORMAT = '%d%b%Y'

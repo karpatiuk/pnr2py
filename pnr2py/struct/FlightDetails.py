@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import datetime
 from .JsonSerializable import JsonSerializable
 from ..patterns import constants
 
@@ -31,9 +31,9 @@ class FlightDetails(JsonSerializable):
             case constants.N_DEPARTURE_DATE:
                 self.parse_date(value.strip(), constants.N_DEPARTURE_DATE)
             case constants.N_DEPARTURE_TIME:
-                pass
+                self.parse_time(value.strip(), constants.N_DEPARTURE_TIME)
             case constants.N_ARRIVAL_TIME:
-                pass
+                self.parse_time(value.strip(), constants.N_ARRIVAL_TIME)
             case constants.N_ARRIVAL_DATE:
                 self.parse_date(value, constants.N_ARRIVAL_DATE)
 
@@ -57,23 +57,53 @@ class FlightDetails(JsonSerializable):
         # Extract the last 3 characters as month and the first 2 characters as day.
         month = date_string[-3:]
         day = date_string[:2]
-
+        date_vals = {'day': day, 'month': month}
         match date_type:
             case constants.N_DEPARTURE_DATE:
                 if self.__depDate is None:
-                    self.__depDate = {'day': day, 'month': month}
+                    self.__depDate = date_vals
                 else:
-                    self.__depDate['day'] = day
-                    self.__depDate['month'] = month
+                    self.__depDate.update(date_vals)
             case constants.N_ARRIVAL_DATE:
                 if self.__arrDate is None:
-                    self.__arrDate = {'day': day, 'month': month}
+                    self.__arrDate = date_vals
                 else:
-                    self.__arrDate['day'] = day
-                    self.__arrDate['month'] = month
+                    self.__arrDate.update(date_vals)
 
-    def parse_time(self, time_string: str):
-        pass
+    def parse_time(self, time_string: str, time_type: str):
+        time_vals = {}
+        match time_string[0]:
+            case '#':
+                time_vals['day_plus'] = 1
+                time_string = time_string[1:]
+            case '*':
+                time_vals['day_plus'] = 2
+                time_string = time_string[1:]
+            case '-':
+                time_vals['day_minus'] = 1
+                time_string = time_string[1:]
+
+        if time_string.find('A') != -1:
+            time_vals['am_pm'] = 'AM'
+
+        if time_string.find('P') != -1:
+            time_vals['am_pm'] = 'PM'
+
+        if time_string.find('+') != -1 or time_string.find('|') != -1:
+            time_vals['next_day'] = True
+
+        match time_type:
+            case constants.N_DEPARTURE_TIME:
+                if self.__depDate is None:
+                    self.__depDate = time_vals
+                else:
+                    self.__depDate.update(time_vals)
+
+            case constants.N_ARRIVAL_TIME:
+                if self.__arrDate is None:
+                    self.__arrDate = time_vals
+                else:
+                    self.__arrDate.update(time_vals)
 
     def populate_date_time(self):
         cur_date_time = datetime.now()
