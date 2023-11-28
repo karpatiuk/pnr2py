@@ -17,7 +17,7 @@ class Flight(JsonSerializable):
         for value_type, value in flight_vals.items():
             match value_type:
                 case constants.N_LINE_NUMBER:
-                    self.line_number = int(value.replace('.', ''))
+                    self.line_number = int(value.replace('.', '').replace('*', ''))
                 case constants.N_AIRPORTS:
                     self.populate_airports(str(value).strip())
                 case _:
