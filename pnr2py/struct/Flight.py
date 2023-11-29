@@ -21,7 +21,7 @@ class Flight(JsonSerializable):
                 case constants.N_AIRPORTS:
                     self.populate_airports(str(value).strip())
                 case _:
-                    flt_details.populate(value, value_type)
+                    flt_details.populate(str(value).strip(), value_type)
                     # print(value)
                     pass
         self.details = flt_details

@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from .JsonSerializable import JsonSerializable
 from ..patterns import constants
+from ..helpers.text import match_pattern
 
 
 def parse_flight_number_text(txt: str) -> dict:
@@ -71,26 +72,53 @@ class FlightDetails(JsonSerializable):
                     self.__arrDate.update(date_vals)
 
     def parse_time(self, time_string: str, time_type: str):
-        time_vals = {}
-        match time_string[0]:
-            case '#':
-                time_vals['day_plus'] = 1
-                time_string = time_string[1:]
-            case '*':
-                time_vals['day_plus'] = 2
-                time_string = time_string[1:]
-            case '-':
-                time_vals['day_minus'] = 1
-                time_string = time_string[1:]
+        """
+        Parse the time string and store the parsed values in the corresponding class attribute.
 
-        if time_string.find('A') != -1:
+        :param time_string: The input time string.
+        :type time_string: str
+        :param time_type: The type of time, either constants.N_DEPARTURE_TIME or constants.N_ARRIVAL_TIME.
+        :type time_type: str
+        """
+        time_vals = {}
+        if time_string[0] in {'#', '*', '-'}:
+            modifier = time_string[0]
+            time_string = time_string[1:]
+            match modifier:
+                case '#':
+                    time_vals['day_plus'] = 1
+                case '*':
+                    time_vals['day_plus'] = 2
+                case '-':
+                    time_vals['day_minus'] = 1
+
+        if 'A' in time_string:
             time_vals['am_pm'] = 'AM'
 
-        if time_string.find('P') != -1:
+        if 'P' in time_string:
             time_vals['am_pm'] = 'PM'
 
-        if time_string.find('+') != -1 or time_string.find('|') != -1:
+        if '+' in time_string or '|' in time_string:
             time_vals['next_day'] = True
+
+        # Extract hour and minutes.
+        matched_value = match_pattern(time_string, constants.PATTERN_TIME_STRING)
+        if matched_value is not None:
+            _dt_string = matched_value.group()
+            time_vals['min'] = _dt_string[-2:]
+            time_vals['hour'] = _dt_string[:-2].zfill(2)
+
+        # Extract day_plus
+        matched_value = match_pattern(time_string, constants.PATTERN_DAY_PLUS_STRING)
+        if matched_value is not None:
+            _dt_string = matched_value.group()
+            time_vals['day_plus'] = int(_dt_string.replace('+', '').replace('#', '').strip())
+
+        # Extract day_minus
+        matched_value = match_pattern(time_string, constants.PATTERN_DAY_MINUS)
+        if matched_value is not None:
+            _dt_string = matched_value.group()
+            time_vals['day_minus'] = int(_dt_string.replace('-', '').strip())
 
         match time_type:
             case constants.N_DEPARTURE_TIME:
@@ -106,11 +134,23 @@ class FlightDetails(JsonSerializable):
                     self.__arrDate.update(time_vals)
 
     def populate_date_time(self):
+        """
+        Populate the departure date and time based on the stored values.
+
+        This method uses the current date and time and updates the departure date based on the stored day, month,
+        and year information in the `__depDate` attribute.
+
+        Prints the hour from the departure date.
+
+        :return: None
+        """
         cur_date_time = datetime.now()
+
         if self.__depDate is not None:
-            # print(self.__depDate.get('month').title())
+
+            # Create a departure date object using the stored day, month, and the current year.
             dep_date = datetime.strptime(
                 self.__depDate['day'] + self.__depDate['month'].title() + cur_date_time.strftime('%Y'),
                 constants.CURR_DATE_GDS_FORMAT)
-            print(dep_date)
-        pass
+
+            print(self.__arrDate)
