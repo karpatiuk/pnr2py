@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from .JsonSerializable import JsonSerializable
 from ..patterns import constants
 from ..helpers.text import match_pattern
+from ..helpers import date as date_helper
 
 
 def parse_flight_number_text(txt: str) -> dict:
@@ -24,7 +25,7 @@ class FlightDetails(JsonSerializable):
     departure_date: str = field(default=None)
     arrival_date: str = field(default=None)
 
-    def populate(self, value: str, value_type: str):
+    def add_to_value(self, value: str, value_type: str):
         print(value, value_type)
         match value_type:
             case constants.N_FLIGHT_NUMBER:
@@ -37,8 +38,6 @@ class FlightDetails(JsonSerializable):
                 self.parse_time(value.strip(), constants.N_ARRIVAL_TIME)
             case constants.N_ARRIVAL_DATE:
                 self.parse_date(value, constants.N_ARRIVAL_DATE)
-
-        self.populate_date_time()
 
     def populate_flight_number(self, txt: str):
         res = parse_flight_number_text(txt.strip())
@@ -133,7 +132,7 @@ class FlightDetails(JsonSerializable):
                 else:
                     self.__arrDate.update(time_vals)
 
-    def populate_date_time(self):
+    def populate(self):
         """
         Populate the departure date and time based on the stored values.
 
@@ -144,13 +143,47 @@ class FlightDetails(JsonSerializable):
 
         :return: None
         """
-        cur_date_time = datetime.now()
 
-        if self.__depDate is not None:
+        self.departure_date = self.build_date(self.__depDate)
+        self.arrival_date = self.build_date(self.__arrDate)
+
+    def build_date(self, date_opts: dict):
+        if self.departure_date:
+            dep_datetime = datetime.strptime(self.departure_date, constants.APP_DATE_FORMAT)
+            if 'day' not in date_opts:
+                date_opts['day'] = dep_datetime.strftime('%d')
+            if 'month' not in date_opts:
+                date_opts['month'] = dep_datetime.strftime('%b').upper()
+
+        current_date_time = datetime.now()
+        date_format = '%d %b'
+        year = ''
+        if date_opts is not None:
 
             # Create a departure date object using the stored day, month, and the current year.
             dep_date = datetime.strptime(
-                self.__depDate['day'] + self.__depDate['month'].title() + cur_date_time.strftime('%Y'),
+                date_opts['day'] + date_opts['month'].title() + current_date_time.strftime('%Y'),
                 constants.CURR_DATE_GDS_FORMAT)
 
-            print(self.__arrDate)
+            if date_helper.MONTHS[date_opts['month']] < int(current_date_time.month):
+                date_format += ' %Y'
+                year += str(current_date_time.replace(year=int(current_date_time.year) + 1).year)
+
+            if 'am_pm' in date_opts:
+                date_format += ' ' + '%I:%M %p'
+            else:
+                date_format += ' ' + '%H:%M'
+
+            date_str = (date_opts['day'] + ' ' + date_opts['month'].title()
+                        + ' ' + year + ' ' + date_opts['hour'] + ':' + date_opts['min'] + ' '
+                        + (date_opts.get('am_pm') or ''))
+            fl_date = datetime.strptime(date_str.strip(), date_format)
+
+            if 'day_plus' in date_opts:
+                fl_date + timedelta(days=int(date_opts['day_plus']))
+            if 'day_minus' in date_opts:
+                fl_date + timedelta(days=-int(date_opts['day_minus']))
+
+            return fl_date.strftime(constants.APP_DATE_FORMAT)
+
+        return None
