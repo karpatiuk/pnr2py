@@ -1,5 +1,6 @@
 # This is a sample Python script.
-import pnr2py
+from src import pnr2py
+
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
