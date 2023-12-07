@@ -53,7 +53,6 @@ class ItineraryLine:
         This method should be implemented to extract tokens from the text_line based on the predefined patterns.
         """
         text_line = self.text_line.strip()
-        print(text_line)
         for token in self.tokens:
             # print(text_line)
             matched_value = match_pattern(text_line, token.regex)

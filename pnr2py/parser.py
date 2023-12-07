@@ -31,7 +31,7 @@ class Parser:
         pnr_data = PnrData(lexer.result)
         pnr_data.populate()
 
-        # print(pnr_data.to_json(camel_case=True, indent=4))
+        print(pnr_data.to_json(camel_case=True, indent=4))
 
     @staticmethod
     def __merge_non_new_lines(lines: list) -> list:

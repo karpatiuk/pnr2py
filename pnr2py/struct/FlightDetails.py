@@ -26,7 +26,6 @@ class FlightDetails(JsonSerializable):
     arrival_date: str = field(default=None)
 
     def add_to_value(self, value: str, value_type: str):
-        print(value, value_type)
         match value_type:
             case constants.N_FLIGHT_NUMBER:
                 self.populate_flight_number(value)
